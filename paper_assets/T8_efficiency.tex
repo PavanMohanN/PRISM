@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\caption{Efficiency: parameter count, training time, and amortized inference latency per posterior sample.}
+\label{tab:efficiency}
+\begin{tabular}{lcccc}
+\toprule
+Method & Params & Train (s) & Latency (ms/samp) & Inv. $R^2$ \\
+\midrule
+PRISM & 10,066 & 3.9 & 2.145 & 0.962 \\
+cINN & 34,160 & 0.6 & 0.347 & 0.983 \\
+NPE-CNF & 16,624 & 3.7 & 1.906 & 0.906 \\
+VI & 3,748 & 0.1 & 0.010 & 0.929 \\
+\bottomrule
+\end{tabular}
+\\[2pt]\footnotesize MCMC reference latency 2.527 ms/sample; PRISM amortized speedup 1.2$\times$ (grows with dimension and likelihood cost at full scale).
+\end{table}

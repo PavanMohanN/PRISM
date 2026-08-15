@@ -1,0 +1,15 @@
+\begin{table}[t]
+\centering
+\caption{Ablation. Removing the liquid dynamics, exact reversibility (soft), or the projection each degrades a corresponding property; the soft variant loses both exact consistency and calibration.}
+\label{tab:ablation}
+\begin{tabular}{lcccc}
+\toprule
+Variant & Inv. $R^2$ & Cycle err. & Viol. & ECE \\
+\midrule
+PRISM (full) & 0.962 & 3.9e-05 & 0.00 & 0.015 \\
+static (no liquid) & 0.974 & 6.2e-06 & 0.00 & 0.035 \\
+soft (no exact-rev) & 0.899 & 1.8e-01 & 0.00 & 0.514 \\
+no projection & 0.969 & 5.0e-05 & 0.00 & 0.022 \\
+\bottomrule
+\end{tabular}
+\end{table}

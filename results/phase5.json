@@ -1,0 +1,104 @@
+{
+  "mode": "smoke",
+  "config": {
+    "n_train": 600,
+    "n_test": 120,
+    "epochs": 50,
+    "n_steps": 5,
+    "hidden": 48,
+    "posterior_samples": 200,
+    "seeds": [
+      0
+    ],
+    "n_calib_obs": 40,
+    "n_mcmc_obs": 3,
+    "mcmc_samples": 400,
+    "mode": "smoke"
+  },
+  "T6": {
+    "burgers": {
+      "family": "pde",
+      "constraint": "none",
+      "inverse_meanR2": 0.9523883078115114,
+      "forward_relL2": 0.4294283479767884,
+      "violation": 0.0,
+      "cycle_err": 4.862558125751093e-05,
+      "fit_time_s": 7.5720484256744385,
+      "pass": true
+    },
+    "darcy": {
+      "family": "pde",
+      "constraint": "none",
+      "inverse_meanR2": 0.9868399239312552,
+      "forward_relL2": 0.06858048751500091,
+      "violation": 0.0,
+      "cycle_err": 3.48422909155488e-05,
+      "fit_time_s": 9.080520868301392,
+      "pass": true
+    },
+    "gaussian_linear": {
+      "family": "sbi",
+      "constraint": "none",
+      "inverse_meanR2": 0.9093897604242628,
+      "forward_relL2": 0.361689407458582,
+      "violation": 0.0,
+      "cycle_err": 5.218124351813458e-05,
+      "fit_time_s": 8.198473691940308,
+      "pass": true
+    },
+    "helmholtz": {
+      "family": "pde",
+      "constraint": "none",
+      "inverse_meanR2": 0.646572514919808,
+      "forward_relL2": 0.2942970650702541,
+      "violation": 0.0,
+      "cycle_err": 7.617721712449566e-05,
+      "fit_time_s": 7.7046122550964355,
+      "pass": true
+    },
+    "lotka_volterra": {
+      "family": "dynamics",
+      "constraint": "positive",
+      "inverse_meanR2": 0.5084410743160115,
+      "forward_relL2": 0.6302276203809807,
+      "violation": 0.0,
+      "cycle_err": 5.664898344548419e-05,
+      "fit_time_s": 6.322140693664551,
+      "pass": true
+    },
+    "oscillator": {
+      "family": "dynamics",
+      "constraint": "positive",
+      "inverse_meanR2": 0.9606492525055539,
+      "forward_relL2": 0.39777291624539585,
+      "violation": 0.0,
+      "cycle_err": 3.926901626982726e-05,
+      "fit_time_s": 4.295411586761475,
+      "pass": true
+    },
+    "slcp": {
+      "family": "sbi",
+      "constraint": "box",
+      "inverse_meanR2": 0.007749975642078688,
+      "forward_relL2": 0.9197222872338401,
+      "violation": 0.0,
+      "cycle_err": 5.9384859923738986e-05,
+      "fit_time_s": 7.34259033203125,
+      "pass": false
+    },
+    "two_moons": {
+      "family": "sbi",
+      "constraint": "box",
+      "inverse_meanR2": 0.27396175664312233,
+      "forward_relL2": 0.6403104206858115,
+      "violation": 0.0,
+      "cycle_err": 7.14660418452695e-05,
+      "fit_time_s": 3.8881585597991943,
+      "pass": false
+    }
+  },
+  "T6_summary": {
+    "passed": 6,
+    "total": 8
+  }
+}

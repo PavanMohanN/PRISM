@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\caption{Main PDE results. Top: forward surrogate accuracy (relative $L_2$, lower better). Bottom: inverse recovery (RMSE, lower better). Best per column in bold.}
+\label{tab:main-pde}
+\begin{tabular}{lccc}
+\toprule
+Method & Darcy & Burgers & Helmholtz \\
+\midrule
+\multicolumn{4}{l}{\emph{Forward (rel.\ $L_2$)}} \\
+PRISM & 0.069 & 0.429 & 0.294 \\
+FNO & 0.092 & 0.776 & \textbf{0.255} \\
+DeepONet & 0.171 & 0.714 & 0.423 \\
+PINN & \textbf{0.020} & \textbf{0.140} & 0.306 \\
+\midrule
+\multicolumn{4}{l}{\emph{Inverse (RMSE)}} \\
+PRISM & \textbf{0.114} & \textbf{0.127} & 0.345 \\
+cINN & 0.126 & 0.191 & 0.428 \\
+NPE-CNF & 0.171 & 0.227 & \textbf{0.336} \\
+VI & 0.167 & 0.232 & 0.408 \\
+\bottomrule
+\end{tabular}
+\end{table}

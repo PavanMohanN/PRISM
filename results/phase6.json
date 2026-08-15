@@ -1,0 +1,76 @@
+{
+  "mode": "smoke",
+  "config": {
+    "n_train": 600,
+    "n_test": 120,
+    "epochs": 50,
+    "n_steps": 5,
+    "hidden": 48,
+    "posterior_samples": 200,
+    "seeds": [
+      0
+    ],
+    "n_calib_obs": 40,
+    "n_mcmc_obs": 3,
+    "mcmc_samples": 400,
+    "mode": "smoke"
+  },
+  "T7": {
+    "PRISM (full)": {
+      "inverse_meanR2": 0.9615478626064703,
+      "cycle_err": 3.926901626982726e-05,
+      "violation": 0.0,
+      "expected_coverage_error": 0.01458333333333331
+    },
+    "static (no liquid)": {
+      "inverse_meanR2": 0.9736391566497972,
+      "cycle_err": 6.176621354825329e-06,
+      "violation": 0.0,
+      "expected_coverage_error": 0.03541666666666668
+    },
+    "soft (no exact-rev)": {
+      "inverse_meanR2": 0.8988546831734997,
+      "cycle_err": 0.18357279896736145,
+      "violation": 0.0,
+      "expected_coverage_error": 0.5135416666666666
+    },
+    "no projection": {
+      "inverse_meanR2": 0.9694674520846864,
+      "cycle_err": 4.9635953473625705e-05,
+      "violation": 0.0,
+      "expected_coverage_error": 0.021874999999999978
+    }
+  },
+  "T8": {
+    "PRISM": {
+      "params": 10066,
+      "train_time_s": 3.941787004470825,
+      "latency_ms_per_sample": 2.1454334259033203,
+      "inverse_meanR2": 0.9617098993910158
+    },
+    "cINN": {
+      "params": 34160,
+      "train_time_s": 0.6390700340270996,
+      "latency_ms_per_sample": 0.34653306007385254,
+      "inverse_meanR2": 0.983282864633143
+    },
+    "NPE-CNF": {
+      "params": 16624,
+      "train_time_s": 3.721430778503418,
+      "latency_ms_per_sample": 1.9059014320373535,
+      "inverse_meanR2": 0.9062858015802528
+    },
+    "VI": {
+      "params": 3748,
+      "train_time_s": 0.12794256210327148,
+      "latency_ms_per_sample": 0.009895563125610352,
+      "inverse_meanR2": 0.9293606301539052
+    },
+    "MCMC": {
+      "latency_ms_per_sample": 2.526603937149048
+    },
+    "mcmc_speedup_x": 1.1776659702620407
+  },
+  "F10_in_dist_R2": 0.9760343632519847,
+  "F10_ood_R2": -1.306738285877477
+}

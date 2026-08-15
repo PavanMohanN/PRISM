@@ -1,0 +1,20 @@
+\begin{table}[t]
+\centering
+\caption{Cross-domain generality with a single model configuration.}
+\label{tab:generality}
+\begin{tabular}{lccccc}
+\toprule
+Task & Family & Inv. $R^2$ & Fwd rel-$L_2$ & Viol. & Pass \\
+\midrule
+burgers & pde & 0.952 & 0.429 & 0.00 & \checkmark \\
+darcy & pde & 0.987 & 0.069 & 0.00 & \checkmark \\
+gaussian\_linear & sbi & 0.909 & 0.362 & 0.00 & \checkmark \\
+helmholtz & pde & 0.647 & 0.294 & 0.00 & \checkmark \\
+lotka\_volterra & dynamics & 0.508 & 0.630 & 0.00 & \checkmark \\
+oscillator & dynamics & 0.961 & 0.398 & 0.00 & \checkmark \\
+slcp & sbi & 0.008 & 0.920 & 0.00 & -- \\
+two\_moons & sbi & 0.274 & 0.640 & 0.00 & -- \\
+\bottomrule
+\end{tabular}
+\\[2pt]\footnotesize One fixed PRISM configuration across all families: 6/8 tasks pass. Multimodal SBI tasks (SLCP, Two Moons) are evaluated by calibration (Table~\ref{tab:calibration}); posterior-mean $R^2$ understates them.
+\end{table}

@@ -1,0 +1,101 @@
+{
+  "mode": "smoke",
+  "config": {
+    "n_train": 600,
+    "n_test": 120,
+    "epochs": 50,
+    "n_steps": 5,
+    "hidden": 48,
+    "posterior_samples": 200,
+    "seeds": [
+      0
+    ],
+    "n_calib_obs": 40,
+    "n_mcmc_obs": 3,
+    "mcmc_samples": 400,
+    "mode": "smoke"
+  },
+  "T4": {
+    "gaussian_linear": {
+      "PRISM": {
+        "coverage90": 0.89,
+        "expected_coverage_error": 0.012499999999999983,
+        "crps": 0.16535367370623114,
+        "nll": 1.0839120155628856,
+        "sbc_ks": 0.136,
+        "c2st": 0.5583333333333333,
+        "wdist": 0.06955470245225093
+      },
+      "NPE-CNF": {
+        "coverage90": 1.0,
+        "expected_coverage_error": 0.2125,
+        "crps": 0.48506791624023066,
+        "nll": 9.146518027398724,
+        "sbc_ks": 0.35,
+        "c2st": 0.9433333333333334,
+        "wdist": 1.6233683922483884
+      },
+      "VI": {
+        "coverage90": 0.895,
+        "expected_coverage_error": 0.0062500000000000056,
+        "crps": 0.1782756855904028,
+        "nll": 1.3959667258880848,
+        "sbc_ks": 0.13299999999999998,
+        "c2st": 0.5833333333333334,
+        "wdist": 0.08603890104449051
+      }
+    },
+    "slcp": {
+      "PRISM": {
+        "coverage90": 0.91,
+        "expected_coverage_error": 0.03749999999999999,
+        "crps": 0.8285927244093366,
+        "nll": 8.798637086978362,
+        "sbc_ks": 0.15200000000000005,
+        "c2st": 0.8141666666666666,
+        "wdist": 1.050582759211826
+      },
+      "NPE-CNF": {
+        "coverage90": 1.0,
+        "expected_coverage_error": 0.18125,
+        "crps": 1.0655540456027799,
+        "nll": 12.198335982328949,
+        "sbc_ks": 0.233,
+        "c2st": 0.8791666666666668,
+        "wdist": 2.5939860368339316
+      },
+      "VI": {
+        "coverage90": 0.91,
+        "expected_coverage_error": 0.02875000000000001,
+        "crps": 0.8634702615928012,
+        "nll": 9.191333676851363,
+        "sbc_ks": 0.144,
+        "c2st": 0.8208333333333334,
+        "wdist": 1.0219645699662991
+      }
+    },
+    "two_moons": {
+      "PRISM": {
+        "coverage90": 0.9125,
+        "expected_coverage_error": 0.07187500000000001,
+        "crps": 0.23183992844123322,
+        "nll": 0.6320996629547768,
+        "sbc_ks": 0.1275
+      },
+      "NPE-CNF": {
+        "coverage90": 1.0,
+        "expected_coverage_error": 0.178125,
+        "crps": 0.35401260313620936,
+        "nll": 2.686096668045439,
+        "sbc_ks": 0.21500000000000002
+      },
+      "VI": {
+        "coverage90": 1.0,
+        "expected_coverage_error": 0.1125,
+        "crps": 0.22171434722920863,
+        "nll": 0.3897069983081074,
+        "sbc_ks": 0.18500000000000003
+      }
+    }
+  }
+}

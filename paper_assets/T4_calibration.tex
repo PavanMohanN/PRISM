@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\caption{Posterior calibration on SBI tasks. C2ST best near 0.5; Cov@90 best near 0.90; ECE/CRPS/NLL/W$_1$ lower better. Best per task/metric in bold.}
+\label{tab:calibration}
+\begin{tabular}{llcccccc}
+\toprule
+Task & Method & C2ST & Cov@90 & ECE & CRPS & NLL & W$_1$ \\
+\midrule
+gaussian\_linear & PRISM & \textbf{0.558} & 0.890 & 0.012 & \textbf{0.165} & \textbf{1.084} & \textbf{0.070} \\
+ & NPE-CNF & 0.943 & 1.000 & 0.212 & 0.485 & 9.147 & 1.623 \\
+ & VI & 0.583 & \textbf{0.895} & \textbf{0.006} & 0.178 & 1.396 & 0.086 \\
+\midrule
+slcp & PRISM & \textbf{0.814} & \textbf{0.910} & 0.037 & \textbf{0.829} & \textbf{8.799} & 1.051 \\
+ & NPE-CNF & 0.879 & 1.000 & 0.181 & 1.066 & 12.198 & 2.594 \\
+ & VI & 0.821 & \textbf{0.910} & \textbf{0.029} & 0.863 & 9.191 & \textbf{1.022} \\
+\midrule
+two\_moons & PRISM & -- & \textbf{0.912} & \textbf{0.072} & 0.232 & 0.632 & -- \\
+ & NPE-CNF & -- & 1.000 & 0.178 & 0.354 & 2.686 & -- \\
+ & VI & -- & 1.000 & 0.113 & \textbf{0.222} & \textbf{0.390} & -- \\
+\bottomrule
+\end{tabular}
+\end{table}

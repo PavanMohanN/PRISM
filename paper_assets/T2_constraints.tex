@@ -1,0 +1,15 @@
+\begin{table}[t]
+\centering
+\caption{Constraint-violation rate over posterior samples (lower better). PRISM is exactly 0 by construction.}
+\label{tab:constraints}
+\begin{tabular}{lcccc}
+\toprule
+Task (constraint) & PRISM & cINN & NPE-CNF & VI \\
+\midrule
+oscillator (positive) & \textbf{0.0\%} & 0.0\% & 24.4\% & 0.1\% \\
+lotka\_volterra (positive) & \textbf{0.0\%} & 0.1\% & 44.7\% & 0.8\% \\
+two\_moons (box) & \textbf{0.0\%} & 14.3\% & 60.8\% & 16.7\% \\
+slcp (box) & \textbf{0.0\%} & 36.1\% & 89.6\% & 34.1\% \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,18 @@
+\begin{table}[t]
+\centering
+\caption{Capability matrix: PRISM versus representative baselines. \checkmark{} = supported by construction, $\sim$ = partial/soft, -- = not supported.}
+\label{tab:novelty}
+\begin{tabular}{lcccccc}
+\toprule
+Capability & PRISM & cINN & inv-FNO & NPE-CNF & PINO & PRISM-soft \\
+\midrule
+Forward & \checkmark & \checkmark & \checkmark & -- & \checkmark & \checkmark \\
+Inverse & \checkmark & \checkmark & \checkmark & \checkmark & -- & \checkmark \\
+Exact consistency & \checkmark & \checkmark & -- & $\sim$ & -- & -- \\
+Hard constraints & \checkmark & -- & -- & -- & $\sim$ & $\sim$ \\
+Calibrated posterior & \checkmark & \checkmark & -- & \checkmark & -- & $\sim$ \\
+Theory & \checkmark & -- & -- & -- & $\sim$ & -- \\
+\bottomrule
+\end{tabular}
+\\[2pt]\footnotesize Only PRISM provides exact consistency, hard constraints, calibrated posteriors, and theory together.
+\end{table}
