@@ -1,0 +1,95 @@
+% =====================================================================
+% PRISM Phase 0 -- corrected theory (drop-in)
+% Replaces old Proposition 1 (Sec. 3.2), the stability proposition (Sec. 3.6),
+% and Appendix C proofs.
+% Requires in preamble:
+%   \usepackage{amsmath,amssymb,amsthm}
+%   \newtheorem{proposition}{Proposition}
+%   \newtheorem{assumption}{Assumption}
+% =====================================================================
+
+\begin{assumption}[Regularity of the velocity field]
+\label{ass:reg}
+The velocity field $g_\theta:\mathbb{R}^{d}\times[0,1]\to\mathbb{R}^{d}$ is
+continuous in $t$, continuously differentiable in $\mathbf{v}$, and uniformly
+Lipschitz in $\mathbf{v}$ on the relevant compact domain $\Omega$, with constant
+$L_g=\sup_{t\in[0,1]}\mathrm{Lip}_{\mathbf{v}}\,g_\theta(\cdot,t)<\infty$. In the
+implementation this is ensured by using a continuously differentiable activation
+(SiLU) in $\mathrm{MLP}_\theta$; $\tanh$ or softplus satisfy the same conditions.
+\end{assumption}
+
+\begin{proposition}[Latent-flow reversibility]
+\label{prop:inv}
+Under Assumption~\ref{ass:reg}, the time-$1$ flow map
+$F_\theta:\mathbf{v}(0)\mapsto\mathbf{v}(1)$ is a $C^{1}$ diffeomorphism onto its
+image, and its inverse is obtained by integrating the same field in reverse
+time; hence $F_\theta^{-1}\circ F_\theta=\mathrm{id}$ in exact arithmetic.
+Moreover $\det\nabla F_\theta(\mathbf{v}(0))
+=\exp\!\big(\int_{0}^{1}\mathrm{tr}\,\partial_{\mathbf{v}}
+g_\theta(\mathbf{v}(t),t)\,dt\big)>0$, so $F_\theta$ is orientation-preserving
+and everywhere invertible. This concerns the \emph{latent} transport only; it
+does not by itself imply consistency between the auxiliary physical forward
+surrogate $g_\psi$ and the inverse path, which we measure empirically.
+\end{proposition}
+
+\begin{proposition}[Numerical reconstruction error]
+\label{prop:num}
+Let $\widehat{F}_\theta$ denote integration of the flow with a stable one-step
+method of order $p$ and step size $h$. Under Assumption~\ref{ass:reg}, the
+forward--reverse reconstruction error satisfies
+$\lVert \widehat{F}_\theta^{-1}(\widehat{F}_\theta(\tilde{\mathbf{x}}))
+-\tilde{\mathbf{x}}\rVert=\mathcal{O}(h^{p})$, up to floating-point roundoff. We
+make no claim of exact cancellation between the forward and reverse passes; the
+error is governed by the global discretization error of the chosen integrator.
+\end{proposition}
+
+\begin{proposition}[Stability of the amortized inverse]
+\label{prop:stab}
+Let $h(\mathbf{y})=c\big(F_\theta^{-1}(\boldsymbol{\mu}_\phi(\mathbf{y}))\big)$.
+Under Assumption~\ref{ass:reg}, a Gr\"onwall estimate gives
+$\mathrm{Lip}(F_\theta^{-1})\le e^{L_g}$, hence
+\begin{equation}
+\mathrm{Lip}(h)\ \le\ \mathrm{Lip}(c)\,e^{L_g}\,\mathrm{Lip}(\boldsymbol{\mu}_\phi).
+\end{equation}
+This is a \emph{global} upper bound and may be loose; we therefore also report
+the empirical local sensitivity
+$\max_i\lVert\nabla h(\mathbf{y}_i)\rVert_2$ over held-out observations
+(Table~\ref{tab:stability}) and distinguish it from the theoretical constant.
+\end{proposition}
+
+% ---------------------------------------------------------------------
+% Appendix proofs
+% ---------------------------------------------------------------------
+
+\paragraph{Proof of Proposition~\ref{prop:inv}.}
+By Assumption~\ref{ass:reg} and the Picard--Lindel\"of theorem, the initial value
+problem $\dot{\mathbf{v}}(t)=g_\theta(\mathbf{v}(t),t)$,
+$\mathbf{v}(0)=\tilde{\mathbf{x}}$, has a unique solution on $[0,1]$ depending
+continuously on the initial condition. Since $g_\theta$ is $C^{1}$ in
+$\mathbf{v}$, the variational equation
+$\dot{\mathbf{J}}(t)=\partial_{\mathbf{v}}g_\theta(\mathbf{v}(t),t)\,\mathbf{J}(t)$,
+$\mathbf{J}(0)=\mathbf{I}$, has solution
+$\mathbf{J}(t)=\nabla F_\theta^{(t)}$ with
+$\det\mathbf{J}(t)=\exp\!\big(\int_0^t\mathrm{tr}\,\partial_{\mathbf{v}}
+g_\theta\,ds\big)>0$ by Liouville's formula. Hence $\nabla F_\theta$ is
+nonsingular everywhere and, by the inverse function theorem, $F_\theta$ is a
+$C^{1}$ diffeomorphism whose inverse is the time-reversed flow. \hfill$\square$
+
+\paragraph{Proof of Proposition~\ref{prop:num}.}
+Under Assumption~\ref{ass:reg}, a stable order-$p$ one-step method has global
+error $\mathcal{O}(h^{p})$ on the fixed interval $[0,1]$. The forward and reverse
+integrations compose two maps, each within $\mathcal{O}(h^{p})$ of the exact
+(mutually inverse) flows; the triangle inequality gives a reconstruction error of
+$\mathcal{O}(h^{p})$, up to roundoff. No symmetry of the integrator is assumed.
+\hfill$\square$
+
+\paragraph{Proof of Proposition~\ref{prop:stab}.}
+For initial states $\mathbf{a},\mathbf{b}$,
+$\frac{d}{dt}\lVert\Phi_t(\mathbf{a})-\Phi_t(\mathbf{b})\rVert
+\le L_g\lVert\Phi_t(\mathbf{a})-\Phi_t(\mathbf{b})\rVert$, so Gr\"onwall's
+inequality gives
+$\lVert\Phi_1(\mathbf{a})-\Phi_1(\mathbf{b})\rVert
+\le e^{L_g}\lVert\mathbf{a}-\mathbf{b}\rVert$, and the same bounds the reverse
+flow. Sub-multiplicativity of Lipschitz constants over the composition
+$c\circ F_\theta^{-1}\circ\boldsymbol{\mu}_\phi$ yields the stated bound.
+\hfill$\square$

@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use PRISM, please cite the accompanying paper."
+title: "PRISM: Physically-Constrained, Reversible Inference via Stochastic Liquid-ODE Maps for Ill-Posed Inverse Problems"
+authors:
+  - family-names: "Neelamraju"
+    given-names: "Pavan Mohan"
+version: 1.0.0
+license: MIT
+keywords:
+  - inverse-problems
+  - normalizing-flows
+  - neural-ode
+  - uncertainty-quantification
+  - operator-learning

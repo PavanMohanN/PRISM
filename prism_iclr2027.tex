@@ -1,0 +1,298 @@
+\documentclass{article}
+\usepackage{iclr2026_conference,times}   % swap to the ICLR 2027 style when released
+
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsthm}
+\usepackage{pifont}
+
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+\newcommand{\pmark}{\ensuremath{\sim}}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+
+\title{PRISM: Structurally Reversible Latent Transport with \\ Feasibility by Construction for Ill-Posed Inverse Problems}
+
+\author{Anonymous authors \\ Paper under double-blind review}
+
+\begin{document}
+
+\maketitle
+
+% ================= Abstract (Phase 0 reframed) =================
+\begin{abstract}
+Recovering physical parameters from indirect, noisy observations---the ill-posed
+inverse problem---requires properties that contemporary learning-based methods
+provide only in isolation: consistent inversion, satisfaction of hard physical
+constraints, and calibrated posterior uncertainty. We introduce PRISM, a
+continuous normalizing-flow framework that combines structurally reversible latent
+transport, explicit support-aware parameter transforms, and amortized conditional
+posterior inference within a single model. The transport is a liquid
+time-constant neural ordinary differential equation (ODE): under stated regularity
+assumptions its time-$1$ map is a $C^{1}$ diffeomorphism, so the inverse is
+obtained by reverse-time integration and forward--reverse reconstruction is
+limited only by the numerical integration scheme. Fixed, dimension-matched support
+transforms guarantee that every decoded parameter is physically feasible by
+construction, with correct physical-space likelihoods, and an observation-conditioned
+base distribution amortizes uncertainty-aware inference in a single forward pass.
+We analyze the reversibility and stability of the latent transport under explicit
+regularity conditions, and evaluate PRISM on partial-differential-equation (PDE)
+operator inversion, simulation-based inference (SBI), and dynamical-system
+benchmarks against strong, identically constrained baselines with multi-seed
+uncertainty estimates. PRISM delivers strong inverse accuracy and competitive
+posterior calibration under a shared training framework that also provides
+reversible latent transport and feasibility by construction. We release a
+reproducible benchmark and a scikit-learn-style library.
+\end{abstract}
+
+% ================= Introduction =================
+\section{Introduction}
+Inverse problems pervade the computational sciences: reconstructing a subsurface
+field from sparse gauges, inferring dynamical parameters from a short trajectory,
+or recovering the latent drivers of a stochastic simulator. They are ill-posed---the
+forward operator destroys information---and their solutions are rarely
+unconstrained. A useful method must therefore invert consistently, respect the
+constraints that define an admissible solution, and quantify uncertainty honestly.
+
+Existing families each address a strict subset. Neural operators and physics-informed
+networks learn accurate forward surrogates but provide neither an inverse map nor a
+posterior; invertible networks and flows furnish an exact inverse and a sampleable
+posterior but enforce constraints only through soft penalties; and neural posterior
+estimators target calibration directly yet inherit neither consistency nor
+feasibility guarantees. We show these properties can be obtained together through
+architectural choices rather than additional penalties.
+
+We are careful to separate what is \emph{guaranteed by construction} from what is
+\emph{demonstrated empirically}. PRISM guarantees reversibility of the latent
+transport (under stated regularity) and feasibility through explicit support
+transforms; it demonstrates calibration, inverse accuracy, and robustness on
+benchmarks. It does not claim exactness between the auxiliary physical
+forward surrogate and the inverse path---a quantity we instead measure.
+
+\paragraph{Contributions.}
+\begin{itemize}
+\item A liquid neural-ODE transport for reversible latent parameter mapping, with
+reversibility and stability analyzed under explicit regularity assumptions.
+\item Explicit, dimension-matched support transforms that make posterior samples
+physically feasible by construction, with the corresponding physical-space
+likelihood.
+\item An observation-conditioned base distribution for amortized posterior
+inference in a single forward pass.
+\item A cross-domain empirical study against \emph{identically constrained}
+baselines with multi-seed uncertainty, separating guaranteed from empirical
+properties.
+\item A reproducible benchmark and documented library that regenerate every result.
+\end{itemize}
+
+% ================= Related Work =================
+\section{Related Work}
+\label{sec:related}
+Fourier Neural Operators (FNOs), Deep Operator Networks (DeepONet), and the neural
+operator framework learn resolution-invariant forward maps; physics-informed
+neural networks (PINNs) embed PDE residuals. None inverts or yields a posterior.
+Normalizing flows and continuous normalizing flows give tractable densities and
+exact inversion; conditional invertible neural networks (cINNs) and related
+amortized methods recover posteriors by sampling a latent code, but rarely enforce
+hard constraints and are exactly consistent only for discrete coupling
+architectures. Neural posterior estimation (NPE) targets calibrated posteriors,
+assessed by simulation-based calibration (SBC), classifier two-sample tests
+(C2ST), and standardized suites. Liquid time-constant networks introduce
+input-dependent time constants; we repurpose this mechanism as an invertible flow
+and isolate its contribution.
+
+\begin{table}[t]
+\centering
+\caption{Architectural capability matrix. Each entry follows from the method
+definition. \cmark{}~present, \xmark{}~absent by default. A support transform
+(row~3) can be added to any method; we do so for all baselines in the constraint
+comparison, so feasibility is a shared, testable property rather than unique to
+PRISM.}
+\label{tab:novelty}
+\begin{tabular}{lcccccc}
+\toprule
+Capability & PRISM & cINN & NPE-CNF & VI & FNO/DeepONet & PINN \\
+\midrule
+Invertible latent transform      & \cmark & \cmark & \cmark & \cmark & \xmark & \xmark \\
+Tractable conditional density    & \cmark & \cmark & \cmark & \cmark & \xmark & \xmark \\
+Explicit support transform       & \cmark & \xmark & \xmark & \xmark & \xmark & \xmark \\
+Auxiliary physical forward map    & \cmark & \xmark & \xmark & \xmark & \cmark & \cmark \\
+Amortized single-pass sampling   & \cmark & \cmark & \cmark & \cmark & \xmark & \xmark \\
+Continuous-time (ODE) transport  & \cmark & \xmark & \cmark & \xmark & \xmark & \xmark \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ================= Method =================
+\section{Method}
+\label{sec:method}
+
+\subsection{Problem setup}
+Let $\mathbf{x}\in\mathcal{C}\subseteq\mathbb{R}^{d}$ be parameters constrained to a
+feasible set $\mathcal{C}$ and $\mathbf{y}\in\mathbb{R}^{N}$ an observation from a
+forward process $\mathbf{y}=\mathcal{F}(\mathbf{x})+\boldsymbol{\eta}$. The map is
+many-to-one, so the target is the posterior $p(\mathbf{x}\mid\mathbf{y})$. We seek a
+single model that (i)~predicts $\mathbf{y}$ from $\mathbf{x}$, (ii)~returns a point
+estimate of $\mathbf{x}$, and (iii)~produces calibrated posterior samples, while
+guaranteeing $\mathbf{x}\in\mathcal{C}$.
+
+\subsection{A liquid-ODE flow and its latent reversibility}
+The core is a continuous normalizing flow $F_\theta$ defined by integrating a learned
+velocity field from $t{=}0$ to $t{=}1$, with the liquid form
+\begin{equation}
+g_\theta(\mathbf{v},t)= -\Big(\tfrac{1}{\boldsymbol{\tau}}+\mathbf{s}(\mathbf{v},t)\Big)\odot \mathbf{v}+\mathbf{s}(\mathbf{v},t)\odot \mathbf{A},\qquad \mathbf{s}(\mathbf{v},t)=\sigma\!\big(\mathrm{MLP}_\theta([\mathbf{v},t])\big),
+\label{eq:liquid}
+\end{equation}
+where $\mathrm{MLP}_\theta$ uses a continuously differentiable activation. Fixing
+$\mathbf{s}$ to be state-independent recovers a static neural ODE (an ablation).
+
+\input{phase0_theory.tex}
+
+Empirically, the latent cycle error tracks the integration floor and the fitted
+convergence order matches the integrator, while the \emph{physical} cycle
+$\lVert h(g_\psi(\mathbf{x}))-\mathbf{x}\rVert$ is reported separately as an
+empirical quantity (Table~\ref{tab:cycle}, Figure~\ref{fig:reversibility}).
+
+\subsection{Hard constraints by construction}
+\input{phase0_constraints.tex}
+
+\subsection{Calibrated posterior via an amortized conditional base}
+A continuous flow induces a density through the instantaneous change of variables.
+We condition on $\mathbf{y}$ in the \emph{base distribution}: an amortization
+network maps $\mathbf{y}$ to a Gaussian base, giving
+\begin{equation}
+\log p_\theta(\tilde{\mathbf{x}}\mid\mathbf{y})=\log\mathcal{N}\!\big(F_\theta(\tilde{\mathbf{x}});\,\boldsymbol{\mu}_\phi(\mathbf{y}),\,\mathrm{diag}\,\boldsymbol{\sigma}_\phi(\mathbf{y})^2\big)+\log\big|\det\nabla_{\tilde{\mathbf{x}}}F_\theta(\tilde{\mathbf{x}})\big|.
+\label{eq:cond}
+\end{equation}
+We show empirically (Table~\ref{tab:conditioning}) that conditioning only through
+the velocity field can, in our setup, ignore the observation; conditioning the base
+yields informative, y-dependent posteriors. Sampling is amortized: draw
+$\mathbf{z}\sim\mathcal{N}(\boldsymbol{\mu}_\phi(\mathbf{y}),\cdot)$ and return
+$\mathbf{x}=c(F_\theta^{-1}(\mathbf{z}))$.
+
+\subsection{Forward surrogate and training}
+A lightweight head $g_\psi$ provides the forward map. Training minimizes the
+physical-space negative log-likelihood (NLL), including the transform Jacobian of
+Eq.~\eqref{eq:phys-nll}, plus a forward term, with Adam.
+
+% ================= Experiments =================
+\section{Experiments}
+\label{sec:experiments}
+We evaluate on eight procedurally generated benchmarks across PDE operator
+inversion (Darcy, Burgers, Helmholtz), simulation-based inference (Gaussian-Linear,
+SLCP, Two Moons), and dynamical systems (Oscillator, Lotka-Volterra). SLCP has a
+single dominant mode; Two Moons is the disconnected bimodal case. Baselines are
+cINN, NPE with a continuous normalizing flow (NPE-CNF), amortized variational
+inference (VI), an MCMC reference, and the forward operators FNO, DeepONet, and a
+PINN. All learned-method tables report mean $\pm$ standard deviation over five
+seeds, and every value is read from a single result manifest. Full configuration
+is in Appendix~\ref{app:repro}.
+
+\subsection{Reversibility (latent, guaranteed; physical, measured)}
+\input{paper_assets/T_cycle_phase2.tex}
+Figure~\ref{fig:reversibility} shows the latent cycle error following the expected
+$\mathcal{O}(h^{p})$ convergence to an integration floor, while the physical cycle
+is reported separately and never presented as exact.
+
+\subsection{Feasibility: a fair comparison}
+\input{paper_assets/T_constraints_fair.tex}
+When every method receives the same support transform, the violation rate is
+$\approx 0$ across the board; the comparison therefore turns on calibration,
+physical NLL, inverse error, and latency rather than on feasibility.
+
+\subsection{Stability}
+\input{paper_assets/T_stability.tex}
+The global Gr\"onwall bound is loose; the empirical local sensitivity is far
+smaller and governs practical robustness (Figure~\ref{fig:stability}).
+
+\subsection{Ablations}
+\input{paper_assets/T_liquid_vs_static.tex}
+\input{paper_assets/T_conditioning.tex}
+\input{paper_assets/T_projection.tex}
+Liquid dynamics help most on the harder posterior geometries rather than
+uniformly; the conditioning ablation shows the dynamics-only variant ignoring the
+observation; and the projection's value is visible on the box-constrained tasks.
+
+\subsection{Accuracy}
+\input{paper_assets/T_main_pde.tex}
+On the forward map a dedicated operator is most accurate; PRISM's auxiliary head is
+competitive but not state-of-the-art, and it leads on the inverse RMSE this work
+targets (Figure~\ref{fig:fields}).
+
+\subsection{Calibration across domains}
+\input{paper_assets/T_calibration_ext.tex}
+PRISM is competitive with the strongest learned baselines and has strong coverage
+and C2ST on several tasks, while VI attains the lowest expected coverage error on
+the Gaussian tasks (Figure~\ref{fig:calibration}).
+
+\subsection{Two Moons: joint geometry}
+\input{paper_assets/T_joint_geometry.tex}
+Marginal coverage is acceptable, yet the joint discrepancy is large and the mode
+balance low: a single connected base blurs the two crescents
+(Figure~\ref{fig:posteriors}). We do not present marginal calibration as evidence
+of a correct joint posterior.
+
+\subsection{Efficiency and generality}
+\input{paper_assets/T_efficiency.tex}
+\input{paper_assets/T_generality_raw.tex}
+PRISM trades higher per-sample latency for continuous-time reversibility and hard
+constraints; the amortization break-even falls sharply as parameter dimension grows
+(Figure~\ref{fig:pareto}). Generality is reported as raw metrics with a
+posterior-appropriate primary metric per task, not a binary pass/fail.
+
+% ================= Limitations & Conclusion =================
+\section{Limitations and Conclusion}
+\label{sec:limitations}
+A single continuous flow with a unimodal base cannot split disconnected posterior
+modes; on Two Moons PRISM recovers a calibrated but mode-blurred posterior. Trained
+on a parameter sub-range, amortized inference does not extrapolate out of
+distribution. Each posterior sample requires an ODE solve, so per-sample latency
+exceeds that of discrete flows, though amortization wins in total wall-clock beyond
+a break-even that shrinks with dimension. The forward surrogate is competitive but
+not state-of-the-art. Within these bounds, PRISM shows that reversible latent
+transport, feasibility by construction, and amortized uncertainty-aware inference
+can coexist in one model, with guarantees where they are provable and measurement
+where they are not.
+
+\input{PRISM_reproducibility.tex}
+
+\bibliography{references}
+\bibliographystyle{iclr2026_conference}
+
+\appendix
+\section{Additional figures}
+\begin{figure}[h]\centering\includegraphics[width=\linewidth]{paper_assets/F_reversibility.pdf}
+\caption{Latent (guaranteed) and physical (empirical) cycle error versus solver
+budget. The latent error follows the expected convergence order down to an
+integration floor; the physical cycle is a separate, measured quantity.}
+\label{fig:reversibility}\end{figure}
+\begin{figure}[h]\centering\includegraphics[width=0.7\linewidth]{paper_assets/F_stability.pdf}
+\caption{Empirical local sensitivity (mean and max) versus perturbation, with the
+loose global bound for context. We do not equate the empirical max with the true
+global Lipschitz constant.}
+\label{fig:stability}\end{figure}
+\begin{figure}[h]\centering\includegraphics[width=\linewidth]{paper_assets/F_calibration_ext.pdf}
+\caption{Calibration across five domains: SBC rank histograms (near-uniform
+indicates calibration) and reliability curves tracking the diagonal.}
+\label{fig:calibration}\end{figure}
+\begin{figure}[h]\centering\includegraphics[width=\linewidth]{paper_assets/F_posteriors_tm.pdf}
+\caption{Two Moons posteriors: reference versus PRISM. A single connected base
+blurs the modes; the mixture base, where used, recovers them.}
+\label{fig:posteriors}\end{figure}
+\begin{figure}[h]\centering\includegraphics[width=0.5\linewidth]{paper_assets/F_fields.pdf}
+\caption{Darcy field: ground truth versus PRISM reconstruction (shared color
+scale).}
+\label{fig:fields}\end{figure}
+\begin{figure}[h]\centering\includegraphics[width=0.55\linewidth]{paper_assets/F_pareto.pdf}
+\caption{Accuracy versus latency, drawn from the same records as the efficiency
+table.}
+\label{fig:pareto}\end{figure}
+
+\end{document}

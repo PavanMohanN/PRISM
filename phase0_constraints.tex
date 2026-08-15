@@ -1,0 +1,61 @@
+% =====================================================================
+% PRISM Phase 0 -- corrected constraint transforms (drop-in)
+% Replaces Section 3.3 body and adds the transforms table + physical-space NLL.
+% Requires: \usepackage{amsmath,amssymb,booktabs}
+% =====================================================================
+
+% ---- Section 3.3 body ----
+We parameterize constrained parameters through an explicit, differentiable
+support transform $c:\mathbb{R}^{k}\to\mathcal{C}$ whose domain dimension $k$
+matches the \emph{intrinsic} dimension of the feasible set $\mathcal{C}$, with
+closed-form inverse $c^{-1}$ and Jacobian. PRISM operates on the unconstrained
+coordinate $\tilde{\mathbf{x}}=c^{-1}(\mathbf{x})$ and emits
+$\mathbf{x}=c(\tilde{\mathbf{x}})$; since $c$ maps onto $\mathcal{C}$, every
+decoded sample---including posterior tail draws---is feasible by construction.
+Table~\ref{tab:transforms} lists the transforms. For positive parameters we use
+the softplus map and for box-constrained parameters a scaled logistic map, both
+smooth bijections onto the open feasible set. Simplex-valued parameters (not
+required by our benchmarks) are supported through a dimension-matched
+stick-breaking bijection $\mathbb{R}^{d-1}\to\mathrm{int}\,\Delta^{d-1}$; we
+avoid the softmax, which is not injective (adding a constant to every logit
+leaves the output unchanged) and maps a $d$-dimensional input onto a set of
+intrinsic dimension $d-1$.
+
+\paragraph{Density in physical coordinates.}
+Because the conditional density is defined on the unconstrained coordinate, the
+physical-space log-density includes the transform Jacobian,
+\begin{equation}
+\log p_\theta(\mathbf{x}\mid\mathbf{y})
+=\log p_\theta\big(c^{-1}(\mathbf{x})\mid\mathbf{y}\big)
++\log\big|\det \mathbf{J}_{c^{-1}}(\mathbf{x})\big|,
+\label{eq:phys-nll}
+\end{equation}
+and for elementwise transforms
+$\log|\det\mathbf{J}_{c^{-1}}(\mathbf{x})|
+=\sum_i\log|(c^{-1})'(x_i)|=-\sum_i\log|c'(u_i)|$ with $u_i=c^{-1}(x_i)$. All
+reported negative log-likelihoods are evaluated in physical coordinates with this
+term included; we verify Eq.~\eqref{eq:phys-nll} against a one-dimensional
+numerical normalization check for the softplus and logistic maps.
+
+% ---- Transforms table (appendix or Sec. 3.3) ----
+\begin{table}[t]
+\centering
+\caption{Support transforms used by PRISM. Each is a smooth bijection from the
+unconstrained coordinate onto the (open) feasible set, with closed-form inverse
+and Jacobian; the domain dimension matches the intrinsic dimension of the
+feasible set. Here $\sigma$ is the logistic sigmoid and $z=(x-a)/(b-a)$.}
+\label{tab:transforms}
+\begin{tabular}{lllll}
+\toprule
+Constraint & $c(u)$ & Codomain & $c^{-1}(x)$ & $\log|c'(u)|$ \\
+\midrule
+Positive & $\mathrm{softplus}(u)$ & $(0,\infty)$ & $\log(e^{x}-1)$ & $\log\!\big(1-e^{-x}\big)$ \\
+Box $[a,b]$ & $a+(b-a)\,\sigma(u)$ & $(a,b)$ & $\sigma^{-1}\!\big(z\big)$ & $\log(b-a)+\log z+\log(1-z)$ \\
+Simplex$^{\dagger}$ & stick-breaking & $\mathrm{int}\,\Delta^{d-1}$ & log-ratio & closed form \\
+\bottomrule
+\end{tabular}
+\\[3pt]
+{\footnotesize $^{\dagger}$Not used by our benchmarks; listed to show
+extensibility with a dimension-matched bijection. The softmax is excluded as it
+is non-injective and dimension-mismatched.}
+\end{table}

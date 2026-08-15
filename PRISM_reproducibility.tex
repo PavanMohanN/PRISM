@@ -1,0 +1,72 @@
+% =====================================================================
+% PRISM Phase 6 -- reproducibility statement + appendix (drop-in)
+% Place the statement before References; place the appendix section in the
+% appendix. Fills guide item 22.
+% =====================================================================
+
+% ---- Reproducibility Statement (before \bibliography) ----
+\subsubsection*{Reproducibility Statement}
+All benchmarks are procedurally generated, so no external data are required. The
+method is fully specified in Section~\ref{sec:method} (the velocity field,
+support transforms, conditional base, training objective, and the physical-space
+likelihood) and the theory in Appendix~\ref{app:proofs} states every regularity
+assumption. Appendix~\ref{app:repro} lists dataset sizes and splits, architecture
+widths and activations, optimizer and solver settings, the Jacobian estimator,
+posterior sample counts, the five random seeds, the hyperparameter-search budget,
+and hardware. Every number in the paper is written to a single result manifest
+and read back by the table and figure generators, so a value cannot appear twice
+with two figures; the entire set of tables and figures regenerates from the
+frozen manifest with one command, and all experiments re-run from scratch with
+one script.
+
+% ---- Appendix: full reproducibility details ----
+\section{Reproducibility details}
+\label{app:repro}
+
+\paragraph{Data.} Each task is generated on the fly from a fixed seed. Training
+uses $N_{\text{train}}$ parameter--observation pairs, validation $N_{\text{val}}$,
+and test $N_{\text{test}}$, drawn i.i.d.\ from the task prior and forward process
+(Table~\ref{tab:repro-data}). Because generation is procedural, simulation-based
+calibration draws fresh $(\theta, y)$ pairs at evaluation time.
+
+\paragraph{Architecture.} The liquid velocity field $g_\theta$ is a two-hidden-layer
+multilayer perceptron with SiLU activations and width $W$; the amortization
+network $(\boldsymbol{\mu}_\phi, \boldsymbol{\sigma}_\phi)$ and the forward head
+share this width. The flow is integrated with a fixed-step Runge--Kutta method of
+order $p$ using $K$ steps; the Jacobian trace uses an exact evaluation in the
+low-dimensional regime and a Hutchinson estimator otherwise. Constraints use the
+support transforms of Table~\ref{tab:transforms}.
+
+\paragraph{Optimization.} All methods are trained with Adam at learning rate
+$\eta$, batch size $B$, for $E$ epochs, with gradient clipping at $5.0$ and a
+cosine schedule. Baselines receive method-specific tuning with an equal search
+budget; the NPE-CNF baseline is validated on the analytic linear-Gaussian task
+before use.
+
+\paragraph{Evaluation.} Posterior metrics use $S$ samples per observation.
+Simulation-based calibration uses $N_{\text{SBC}}$ observations. All learned-method
+tables report mean $\pm$ standard deviation over seeds $\{0,1,2,3,4\}$.
+
+\paragraph{Hardware and runtime.} Experiments run on \texttt{<GPU/CPU model>};
+the full five-seed sweep completes in \texttt{<hh:mm>}. Exact commands to
+regenerate each table and figure are listed in the repository \texttt{README}.
+
+\begin{table}[h]
+\centering
+\caption{Dataset sizes and key hyperparameters (fill from your configuration).}
+\label{tab:repro-data}
+\begin{tabular}{lcccccccc}
+\toprule
+Task & $N_{\text{train}}$ & $N_{\text{val}}$ & $N_{\text{test}}$ & $W$ & $K$ & $\eta$ & $B$ & $E$ \\
+\midrule
+Darcy          & & & & & & & & \\
+Burgers        & & & & & & & & \\
+Helmholtz      & & & & & & & & \\
+Gaussian-Linear & & & & & & & & \\
+SLCP           & & & & & & & & \\
+Two Moons      & & & & & & & & \\
+Oscillator     & & & & & & & & \\
+Lotka-Volterra & & & & & & & & \\
+\bottomrule
+\end{tabular}
+\end{table}
