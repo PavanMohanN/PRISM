@@ -1,0 +1,45 @@
+% =====================================================================
+% PRISM Phase 0 -- reframed abstract + contributions (drop-in)
+% Replaces the current abstract and the Contributions itemize.
+% =====================================================================
+
+% ---- Abstract ----
+\begin{abstract}
+We introduce PRISM, a continuous normalizing-flow framework for ill-posed inverse
+problems that combines structurally reversible latent transport, explicit
+support-aware parameter transforms, and amortized conditional posterior inference
+within a single model. The transport is a liquid time-constant neural ordinary
+differential equation: under stated regularity assumptions its time-$1$ map is a
+$C^{1}$ diffeomorphism, so the inverse is obtained by reverse-time integration and
+forward--reverse reconstruction is limited only by the numerical integration
+scheme. Fixed support transforms guarantee that every decoded parameter is
+physically feasible by construction, with correct physical-space likelihoods, and
+an observation-conditioned base distribution provides amortized, uncertainty-aware
+inference in a single forward pass. We analyze the reversibility and stability of
+the latent transport under explicit regularity conditions, and we evaluate PRISM
+on partial-differential-equation operator inversion, simulation-based inference,
+and dynamical-system benchmarks against strong, identically constrained baselines
+with multi-seed uncertainty estimates. PRISM delivers strong inverse accuracy and
+competitive posterior calibration under a shared training framework that also
+provides reversible latent transport and feasibility by construction. We release a
+reproducible benchmark and a scikit-learn-style library.
+\end{abstract}
+
+% ---- Contributions (place at the end of the Introduction) ----
+\paragraph{Contributions.}
+\begin{itemize}
+\item A liquid neural-ODE transport for reversible latent parameter mapping, with
+reversibility and stability analyzed under explicit regularity assumptions
+(Assumption~\ref{ass:reg}, Propositions~\ref{prop:inv}--\ref{prop:stab}).
+\item Explicit, dimension-matched support transforms that render posterior
+samples physically feasible by construction, together with the corresponding
+physical-space likelihood (Eq.~\ref{eq:phys-nll}).
+\item An observation-conditioned base distribution for amortized posterior
+inference in a single forward pass.
+\item A cross-domain empirical study on PDE, simulation-based-inference, and
+dynamical-system benchmarks against \emph{identically constrained} baselines with
+multi-seed uncertainty estimates, separating properties guaranteed by
+construction from those demonstrated empirically.
+\item A reproducible benchmark suite and a documented, scikit-learn-style library
+that regenerates every table and figure.
+\end{itemize}

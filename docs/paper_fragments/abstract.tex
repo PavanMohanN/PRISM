@@ -1,0 +1,43 @@
+\documentclass[letterpaper]{article} % DO NOT CHANGE THIS
+\usepackage[submission]{aaai2027}  % DO NOT CHANGE THIS
+\usepackage[hyphens]{url}  % DO NOT CHANGE THIS
+\usepackage{graphicx} % DO NOT CHANGE THIS
+\urlstyle{rm} % DO NOT CHANGE THIS
+\def\UrlFont{\rm}  % DO NOT CHANGE THIS
+\usepackage{natbib}  % DO NOT CHANGE THIS AND DO NOT ADD ANY OPTIONS TO IT
+\usepackage{caption} % DO NOT CHANGE THIS AND DO NOT ADD ANY OPTIONS TO IT
+\frenchspacing  % DO NOT CHANGE THIS
+
+% Keep the \pdfinfo as shown here.
+\pdfinfo{
+/TemplateVersion (2027.1)
+}
+
+\setcounter{secnumdepth}{0}
+
+% Title (Chicago Title Case).
+\title{PRISM: Physically-Constrained, Reversible Inference via Stochastic Liquid-ODE Maps for Ill-Posed Inverse Problems}
+
+% Anonymous submission: single author "Anonymous Submission", empty affiliations.
+\author{
+    Anonymous Submission
+}
+\affiliations{
+    %
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Recovering physical parameters from indirect, noisy observations---the ill-posed inverse problem---requires three properties that contemporary learning-based methods provide only in isolation: exact forward--inverse consistency, satisfaction of hard physical constraints, and calibrated posterior uncertainty that faithfully represents multiple competing explanations. Operator surrogates predict the forward map but cannot invert it; invertible networks invert but enforce constraints only through soft penalties; and neural posterior estimators quantify uncertainty without guaranteeing either consistency or feasibility, and frequently collapse genuinely multimodal posteriors onto a single mode. We introduce PRISM, a single liquid time-constant neural ordinary-differential-equation flow that unifies all three properties. Because the flow is a diffeomorphism, reverse-time integration yields an exact inverse whose cycle-consistency error equals the numerical solver tolerance rather than the value of a trained penalty. Fixed projection layers render every recovered solution feasible by construction, so that the constraint-violation rate is provably zero. An observation-conditioned mixture base distribution then amortizes calibrated, multimodal posteriors in a single forward pass. We establish exact reversibility and a Gr\"onwall stability bound on the recovered inverse map, and we validate both results empirically. Across controlled synthetic benchmarks that span partial-differential-equation operator inversion and simulation-based inference, and that are evaluated on both in-distribution and out-of-distribution splits, PRISM matches or surpasses state-of-the-art invertible-network, flow-matching, and neural-posterior baselines on inverse accuracy and calibration, while remaining the only method to attain zero constraint violations together with machine-precision reversibility. We release a reproducible benchmark suite and a scikit-learn-style library.
+\end{abstract}
+
+% Uncomment before the camera-ready (not the anonymous submission) to link code/data.
+% \begin{links}
+%     \link{Code}{https://example.com/code}
+%     \link{Datasets}{https://example.com/datasets}
+% \end{links}
+
+\end{document}

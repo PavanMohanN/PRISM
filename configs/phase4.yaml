@@ -1,0 +1,23 @@
+# Config for phase4. 'smoke' = fast CPU sanity; 'full' = paper-scale.
+smoke:
+  n_train: 600
+  n_test: 120
+  epochs: 50
+  n_steps: 5
+  hidden: 48
+  posterior_samples: 200
+  seeds: [0]
+  n_calib_obs: 40
+  n_mcmc_obs: 3
+  mcmc_samples: 400
+full:
+  n_train: 8000
+  n_test: 1000
+  epochs: 400
+  n_steps: 20
+  hidden: 128
+  posterior_samples: 2000
+  seeds: [0, 1, 2]
+  n_calib_obs: 200
+  n_mcmc_obs: 20
+  mcmc_samples: 2000

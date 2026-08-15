@@ -1,0 +1,30 @@
+% =====================================================================
+% PRISM Phase 0 -- rewritten capability matrix (drop-in Table 1)
+% Rows are ARCHITECTURAL capabilities, each reproducible from the method
+% definition. No empirical property (calibration, accuracy) appears here.
+% Requires: \usepackage{booktabs,pifont}
+%   \newcommand{\cmark}{\ding{51}}
+%   \newcommand{\xmark}{\ding{55}}
+% =====================================================================
+
+\begin{table}[t]
+\centering
+\caption{Architectural capability matrix. Each entry follows from the method
+definition, independent of experimental quality. \cmark{}~present, \xmark{}~absent
+by default. A support transform (row~3) can be added to \emph{any} method; we do
+so for all baselines in the constraint comparison, so feasibility is treated as a
+shared, testable property rather than unique to PRISM.}
+\label{tab:novelty}
+\begin{tabular}{lcccccc}
+\toprule
+Capability & PRISM & cINN & NPE-CNF & VI & FNO/DeepONet & PINN \\
+\midrule
+Invertible latent transform      & \cmark & \cmark & \cmark & \cmark & \xmark & \xmark \\
+Tractable conditional density    & \cmark & \cmark & \cmark & \cmark & \xmark & \xmark \\
+Explicit support transform       & \cmark & \xmark & \xmark & \xmark & \xmark & \xmark \\
+Auxiliary physical forward map    & \cmark & \xmark & \xmark & \xmark & \cmark & \cmark \\
+Amortized single-pass sampling   & \cmark & \cmark & \cmark & \cmark & \xmark & \xmark \\
+Continuous-time (ODE) transport  & \cmark & \xmark & \cmark & \xmark & \xmark & \xmark \\
+\bottomrule
+\end{tabular}
+\end{table}
