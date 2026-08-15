@@ -1,7 +1,6 @@
 # PRISM — Structurally Reversible Latent Transport for Ill-Posed Inverse Problems
 
-Reference implementation, benchmark suite, and reproducible experiment pipeline for
-the ICLR 2027 submission. PRISM couples a liquid time-constant neural-ODE flow
+PRISM couples a liquid time-constant neural-ODE flow
 (reversible latent transport under stated regularity), explicit support transforms
 (feasibility by construction), and an observation-conditioned base distribution
 (amortized, calibrated posterior inference).
