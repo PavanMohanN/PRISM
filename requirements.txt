@@ -1,0 +1,11 @@
+# PRISM — ICLR 2027 revision. Python 3.10+ (tested on 3.12).
+numpy>=1.23
+scipy>=1.9
+scikit-learn>=1.1
+matplotlib>=3.6
+pyyaml>=6.0
+torch>=2.0
+torchdiffeq>=0.2.3
+emcee>=3.1
+# dev / testing
+pytest>=7.0
